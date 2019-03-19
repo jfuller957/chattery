@@ -1,0 +1,8 @@
+{
+    "name": "chattery",
+    "version": "0.0.1",
+    "description": "my first socket.io chat app",
+    "dependencies": {
+        "express": "^4.15.2"
+    }
+}
