@@ -13,6 +13,13 @@
       body {
         font: 13px Helvetica, Arial;
       }
+      #chatWrap {
+        float: left;
+        border: 1pm #000 solid;
+      }
+      #contentWrap {
+        display: none;
+      }
       form {
         background: #000;
         padding: 3px;
@@ -46,23 +53,54 @@
     </style>
   </head>
   <body>
-    <ul id="messages"></ul>
-    <form action="">
-      <input id="m" autocomplete="off" /><button>Send</button>
-    </form>
+    <div id="nickWrap">
+      <p>Enter your username:</p>
+      <p id="nickError"></p>
+      <form id="setNick">
+        <input size="35" id="nickname" />
+        <input type="submit" />
+      </form>
+    </div>
+
+    <div id="contentWrap">
+      <div id="chatWrap">
+        <ul id="messages"></ul>
+        <form action="">
+          <input id="m" autocomplete="off" /><button>Send</button>
+        </form>
+      </div>
+      <div id="users"></div>
+    </div>
     <script src="/socket.io/socket.io.js"></script>
     <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
     <script>
       $(function() {
-        let socket = io();
-        $("form").submit(function(e) {
+        let socket = io.connect();
+        let $nickForm = $("#setNick");
+        let $nickError = $("#nickError");
+        let $nickBox = $("#nickname");
+
+        $nickForm.submit(function(e) {
           e.preventDefault();
-          socket.emit("chat message", $("#m").val());
-          $("#m").val("");
-          return false;
-        });
-        socket.on("chat message", function(msg) {
-          $("#messages").append($("<li>").text(msg));
+          socket.emit("new user", $nickBox.val(), function(data) {
+            if (data) {
+              $("#nickWrap").hide();
+              $("#contentWrap").show();
+            } else {
+              $nickError.html("That username is already taken, try again!");
+            }
+            $nickBox.val("");
+          });
+
+          $("form").submit(function(e) {
+            e.preventDefault();
+            socket.emit("chat message", $("#m").val());
+            $("#m").val("");
+            return false;
+          });
+          socket.on("chat message", function(msg) {
+            $("#messages").append($("<li>").text(msg));
+          });
         });
       });
     </script>
