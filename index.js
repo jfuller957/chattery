@@ -15,15 +15,22 @@ io.sockets.on("connection", function(socket) {
       callback(true);
       socket.nickname = data;
       nicknames.push(socket.nickname);
-      io.sockets.emit("usernames", nicknames);
+      updateNicknames();
     }
   });
+
+  function updateNicknames() {
+    io.sockets.emit("usernames", nicknames);
+  }
 
   socket.on("disconnect", function() {
     io.emit("chat message", "A user has connected!");
   });
 
   socket.on("disconnect", function() {
+    if (!socket.nickname) return;
+    nicknames.splice(nicknames.indexOf(socket.nickname), 1);
+    updateNicknames();
     io.emit("chat message", "A user has disconnected!");
   });
 

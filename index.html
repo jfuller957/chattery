@@ -79,6 +79,7 @@
         let $nickForm = $("#setNick");
         let $nickError = $("#nickError");
         let $nickBox = $("#nickname");
+        let $users = $("#users");
 
         $nickForm.submit(function(e) {
           e.preventDefault();
@@ -90,6 +91,14 @@
               $nickError.html("That username is already taken, try again!");
             }
             $nickBox.val("");
+          });
+
+          socket.on("usernames", function(data) {
+            let html = "";
+            for (let i = 0; i < data.length; i++) {
+              html += data[i] + "<br/>";
+            }
+            $users.html(html);
           });
 
           $("form").submit(function(e) {
